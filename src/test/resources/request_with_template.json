@@ -1,0 +1,8 @@
+{
+  "connectionUrl":"jdbc:postgresql://192.168.1.157:5432/test?user=fred&password=secret", 
+  "jdbcDriver":"org.postgresql.Driver",
+  "query":'select did "идентификатор", name "имя", dt at time zone \'utc\' "дата создания", d, dz from distributors limit 30000',
+  "templateFilePath":"src/test/resources/result_template.xls",
+  "outputFilePath":"target/result.xls",
+  "dataSheetIndex": 0
+}
