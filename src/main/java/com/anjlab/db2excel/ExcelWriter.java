@@ -8,17 +8,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelWriter implements DataWriter {
 
     private RequestContext context;
     
-    private HSSFWorkbook workbook;
-    private HSSFSheet sheet;
+    private Workbook workbook;
+    private Sheet sheet;
     
     private int rowIndex;
     
@@ -28,11 +30,15 @@ public class ExcelWriter implements DataWriter {
         if (context.getTemplateFilePath() != null) {
             File templateFile = new File(context.getTemplateFilePath());
             InputStream template = new FileInputStream(templateFile);
-            workbook = new HSSFWorkbook(template);
+            workbook = templateFile.getName().toLowerCase().endsWith(".xls")
+                     ? new HSSFWorkbook(template) 
+                     : new XSSFWorkbook(template);
             template.close();
             sheet = workbook.getSheetAt(context.getDataSheetIndex());
         } else {
-            workbook = new HSSFWorkbook();
+            workbook = context.getOutputFilePath().toLowerCase().endsWith(".xls")
+                     ? new HSSFWorkbook()
+                     : new XSSFWorkbook();
             sheet = workbook.createSheet();
         }
         
@@ -45,13 +51,13 @@ public class ExcelWriter implements DataWriter {
     }
 
     private void writeRow(Object[] values) {
-        HSSFRow row = sheet.getRow(rowIndex);
+        Row row = sheet.getRow(rowIndex);
         if (row == null) {
             row = sheet.createRow(rowIndex);
         }
         rowIndex++;
         
-        HSSFCell cell = null;
+        Cell cell = null;
 
         for (int cellIndex = 0; cellIndex < values.length ; cellIndex++) {
             cell = row.getCell(cellIndex);
